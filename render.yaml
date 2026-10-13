@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: mnist-digit-classifier
+    runtime: docker
+    plan: free
+    healthCheckPath: /

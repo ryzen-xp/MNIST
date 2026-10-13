@@ -14,7 +14,7 @@ use burn::{optim::AdamConfig, prelude::*};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let device = Device::wgpu(Default::default());
+    let device = Device::flex();
     let artifact_dir = "guide";
 
     if !Path::new(artifact_dir).join("config.json").is_file()
@@ -36,7 +36,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .layer(DefaultBodyLimit::max(20 * 1024 * 1024))
         .with_state(state);
 
-    let address = SocketAddr::from(([127, 0, 0, 1], 3000));
+    let port = std::env::var("PORT")
+        .unwrap_or_else(|_| "3000".to_owned())
+        .parse::<u16>()?;
+    let address = SocketAddr::from(([0, 0, 0, 0], port));
     let listener = tokio::net::TcpListener::bind(address).await?;
     println!("Open http://{address} to classify images.");
     axum::serve(listener, app).await?;
